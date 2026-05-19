@@ -5,8 +5,8 @@ import { spawn } from "node:child_process";
 import * as Functions from "../modules/functions.ts";
 import { DK } from "../modules/typing.ts";
 
-const FetchCommand: DK.Commands.Command = {
-  commandName: "fetch",
+const MakeCommand: DK.Commands.Command = {
+  commandName: "make",
   description: "Make a file from the DevKit project",
   aliases: undefined,
   flags: [
@@ -118,4 +118,4 @@ const FetchCommand: DK.Commands.Command = {
   },
 };
 
-export default FetchCommand;
+export default MakeCommand;
