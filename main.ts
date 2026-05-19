@@ -13,6 +13,72 @@ const Commands: string[] = [];
 const cmds: Map<string, DevKit.DK.Commands.Command> = new Map();
 const Flags: Map<string, DevKit.DK.Commands.Flag> = new Map();
 
+const Style = {
+  reset: "\x1b[0m",
+  bold: "\x1b[1m",
+  dim: "\x1b[2m",
+  cyan: "\x1b[36m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  blue: "\x1b[34m",
+  magenta: "\x1b[35m",
+};
+
+function Paint(text: string, ...styles: string[]): string {
+  return `${styles.join("")}${text}${Style.reset}`;
+}
+
+function StripAnsi(text: string): string {
+  let stripped = "";
+  let inEscape = false;
+
+  for (const char of text) {
+    if (char === "\x1b") {
+      inEscape = true;
+      continue;
+    }
+
+    if (inEscape) {
+      if (char === "m") inEscape = false;
+      continue;
+    }
+
+    stripped += char;
+  }
+
+  return stripped;
+}
+
+function PadAnsi(text: string, width: number): string {
+  return text + " ".repeat(Math.max(0, width - StripAnsi(text).length));
+}
+
+function Rule(title?: string): void {
+  const line = "-".repeat(54);
+  if (!title) {
+    console.log(Paint(line, Style.dim));
+    return;
+  }
+
+  console.log(
+    `${Paint("--", Style.dim)} ${Paint(title, Style.bold, Style.cyan)} ${Paint(
+      "-".repeat(Math.max(2, 50 - title.length)),
+      Style.dim
+    )}`
+  );
+}
+
+function Section(title: string): void {
+  console.log();
+  console.log(Paint(title.toUpperCase(), Style.bold, Style.blue));
+}
+
+function Row(label: string, description?: string | null, accent = Style.green) {
+  const name = Paint(label, Style.bold, accent);
+  const detail = description ? `${Paint(" - ", Style.dim)}${description}` : "";
+  console.log(`  ${PadAnsi(name, 22)}${detail}`);
+}
+
 cmds.set("fetch", FetchCommand);
 cmds.set("make", MakeCommand);
 
@@ -32,34 +98,36 @@ for (let i = 0; i < args.length; i++) {
 }
 
 const PrimaryArgument: string | null = Commands[0] || null;
+const HasHelpFlag: boolean = Flags.has("-h") || Flags.has("--help");
 const Help: boolean = PrimaryArgument
-  ? PrimaryArgument === "help"
-  : Flags.has("-h") || Flags.has("--help");
+  ? PrimaryArgument === "help" || HasHelpFlag
+  : HasHelpFlag;
 
 function PrintHeader() {
+  Rule();
   console.log(
-    `${DKFunctions.GetTime()} => ${CLIData.name} - ${CLIData.version}`
+    `${Paint(CLIData.name, Style.bold, Style.magenta)} ${Paint(
+      CLIData.version,
+      Style.dim
+    )} ${Paint("DevKit package manager", Style.cyan)}`
   );
+  Rule();
 }
 function PrintFlag(flag: DevKit.DK.Commands.FlagType) {
   const wrapper = flag.optional ? ["[", "]"] : ["<", ">"];
   const text = `${wrapper[0]}${flag.name}${wrapper[1]}`;
 
-  if (flag.description) {
-    console.log(`    ${text} => ${flag.description}`);
-  } else {
-    console.log(`    ${text}`);
-  }
+  Row(text, flag.description, flag.optional ? Style.yellow : Style.green);
 }
 function PrintFlags(
   flags:
     | Map<string, DevKit.DK.Commands.FlagType>
     | DevKit.DK.Commands.FlagType[]
 ) {
-  console.log("  Flags:");
-
   const list = flags instanceof Map ? [...flags.values()] : flags;
+  if (!list.length) return;
 
+  Section("Flags");
   for (const flag of list) {
     PrintFlag(flag);
   }
@@ -67,13 +135,21 @@ function PrintFlags(
 function PrintCommandHelp(cmd: DevKit.DK.Commands.Command) {
   PrintHeader();
 
+  Section("Usage");
   console.log(
-    `${process.argv0} ${cmd.commandName} => ${cmd.description ?? "no description"}`
+    `  ${Paint(process.argv0, Style.dim)} ${Paint(
+      cmd.commandName,
+      Style.bold,
+      Style.green
+    )} ${Paint("[subcommand] [flags]", Style.dim)}`
   );
+  console.log(`  ${cmd.description ?? "No description."}`);
 
   if (cmd.aliases?.length) {
-    console.log("  Aliases:");
-    console.log(`    ${cmd.aliases.join(", ")}`);
+    Section("Aliases");
+    console.log(
+      `  ${cmd.aliases.map(alias => Paint(alias, Style.cyan)).join(", ")}`
+    );
   }
 
   if (cmd.subcommands) {
@@ -82,9 +158,9 @@ function PrintCommandHelp(cmd: DevKit.DK.Commands.Command) {
       : [...cmd.subcommands];
 
     if (subcommands.length > 0) {
-      console.log("  Subcommands:");
+      Section("Subcommands");
       for (const subcmd of subcommands) {
-        console.log(`    ${subcmd}`);
+        Row(subcmd, null, Style.cyan);
       }
     }
   }
@@ -96,17 +172,28 @@ function PrintCommandHelp(cmd: DevKit.DK.Commands.Command) {
 function PrintHelp(): void {
   PrintHeader();
 
-  console.log(`${process.argv0} <command> [flags]`);
+  Section("Usage");
+  console.log(
+    `  ${Paint(process.argv0, Style.dim)} ${Paint(
+      "<command>",
+      Style.bold,
+      Style.green
+    )} ${Paint("[flags]", Style.dim)}`
+  );
 
-  console.log("Commands:");
-  console.log("  help => prints help");
+  Section("Commands");
+  Row("help", "show global help or details for a command", Style.cyan);
 
   const commands: DevKit.DK.Commands.Command[] = [...cmds.values()];
   for (const cmd of commands) {
-    if (cmd.description)
-      console.log(`  ${cmd.commandName} => ${cmd.description}`);
-    else console.log(`  ${cmd.commandName}`);
+    Row(cmd.commandName, cmd.description, Style.green);
   }
+
+  Section("Examples");
+  console.log(`  ${Paint(`${process.argv0} help make`, Style.dim)}`);
+  console.log(
+    `  ${Paint(`${process.argv0} fetch route js --path=./route`, Style.dim)}`
+  );
 }
 
 if (Help) {
@@ -125,11 +212,21 @@ if (Help) {
     process.exit(0);
   }
 
+  if (PrimaryArgument) {
+    const cmd = cmds.get(PrimaryArgument);
+    if (!cmd) DKFunctions.FatalException(201, "invalid command");
+
+    PrintCommandHelp(cmd as DevKit.DK.Commands.Command);
+    process.exit(0);
+  }
+
   PrintHelp();
   process.exit(0);
 }
-if (!PrimaryArgument && (Flags.has("-v") || Flags.has("--version")))
+if (!PrimaryArgument && (Flags.has("-v") || Flags.has("--version"))) {
   PrintHeader();
+  process.exit(0);
+}
 
 if (PrimaryArgument && cmds.has(PrimaryArgument)) {
   const cmd = cmds.get(PrimaryArgument);

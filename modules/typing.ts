@@ -9,9 +9,7 @@ export type CLIData = {
     | `v${number}.${number}.${number}`
     | `v${number}.${number}.${number}-beta`;
 };
-export type Timeperiod = `\x1b[4;94;40mDEVKIT\x1b[0m::\x1b[4;94;40m${
-  | number
-  | string}:${number | string}\x1b[0m`;
+export type Timeperiod = string;
 export type Version =
   | `v${number}.${number}.${number}`
   | `v${number}.${number}.${number}-beta`;
