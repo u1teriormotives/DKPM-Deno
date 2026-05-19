@@ -41,4 +41,9 @@ export namespace DK {
   }
 
   export const Resolution = res;
+
+  export enum FileMode {
+    RWE = 0o755,
+    RW = 0o644,
+  }
 }
