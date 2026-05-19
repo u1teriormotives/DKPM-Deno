@@ -2,7 +2,7 @@
 
 // deno-lint-ignore-file no-namespace
 export namespace Resolution {
-  export function resolveEndpoint(EndpointName: string): string {
+  export function resolveEndpoint(EndpointName: string): Readonly<string> {
     switch (EndpointName) {
       case "apikey":
       case "keygen":
