@@ -83,7 +83,7 @@ export const makeCommand: DK.Commands.Command = {
             break;
           }
         }
-        const p = pathFlag?.value ?? path.join(__dirname, "route");
+        const p = pathFlag?.value ?? "keygen.c";
 
         await FetchEndpoint(endpoint, p, undefined, DK.FileModes.RW);
 
@@ -111,7 +111,7 @@ export const makeCommand: DK.Commands.Command = {
             break;
           }
         }
-        const p = pathFlag?.value ?? path.join(__dirname, "route");
+        const p = pathFlag?.value ?? "DKRoute";
 
         await FetchEndpoint(endpoint, p, undefined, DK.FileModes.RW);
 
@@ -128,7 +128,7 @@ export const makeCommand: DK.Commands.Command = {
             break;
           }
         }
-        const p = pathFlag?.value ?? path.join(__dirname, "route");
+        const p = pathFlag?.value ?? "index.html";
 
         await FetchEndpoint(endpoint, p, undefined, DK.FileModes.RW);
 

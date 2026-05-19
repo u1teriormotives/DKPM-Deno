@@ -92,7 +92,7 @@ export const fetchCommand: DK.Commands.Command = {
                   break;
                 }
               }
-              const p = pathFlag?.value ?? path.join(__dirname, "route");
+              const p = pathFlag?.value ?? "route";
               return await FetchEndpoint(
                 endpoint,
                 p,
