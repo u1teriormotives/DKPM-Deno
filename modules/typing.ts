@@ -1,6 +1,8 @@
 /** @format */
 // deno-lint-ignore-file no-namespace
 
+import { Resolution as res } from "./resolution.ts";
+
 export type CLIData = {
   name: Readonly<string>;
   version:
@@ -37,4 +39,6 @@ export namespace DK {
       readonly optional: boolean;
     };
   }
+
+  export const Resolution = res;
 }
