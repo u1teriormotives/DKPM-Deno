@@ -34,8 +34,9 @@ const MakeCommand: DK.Commands.Command = {
         case "apikey":
         case "keygen": {
           let path = "./keygen.c";
-          if (flags.has("--path"))
+          if (flags.has("--path")) {
             path = flags.get("--path")?.value ?? "./keygen.c";
+          }
 
           await Functions.FetchEndpoint(
             Endpoint,
@@ -44,24 +45,21 @@ const MakeCommand: DK.Commands.Command = {
             DK.FileMode.RW
           );
 
-          console.log(`${Functions.GetTime()} -> spawning gcc`);
+          Functions.LogStep("spawning gcc");
           const compile = spawn("gcc", [path, "-o", "APIKeyGenerator"]);
-          compile.stdout.on("data", msg => console.log(`GCC (msg) => ${msg}`));
-          compile.stderr.on("data", msg =>
-            console.error(`GCC (err) => ${msg}`)
-          );
+          compile.stdout.on("data", msg => Functions.LogStep(`gcc: ${msg}`));
+          compile.stderr.on("data", msg => Functions.LogError(`gcc: ${msg}`));
 
           compile.on("close", () =>
-            console.log(
-              `${Functions.GetTime()} -> output compiled binary to ./APIKeyGenerator`
-            )
+            Functions.LogSuccess("compiled binary to ./APIKeyGenerator")
           );
           break;
         }
         case "dkroute": {
           let path = "./DKRoute";
-          if (flags.has("--path"))
+          if (flags.has("--path")) {
             path = flags.get("--path")?.value ?? "./DKRoute";
+          }
 
           await Functions.FetchEndpoint(
             Endpoint,
@@ -73,8 +71,9 @@ const MakeCommand: DK.Commands.Command = {
         }
         case "index.html": {
           let path = "./index.html";
-          if (flags.has("--path"))
+          if (flags.has("--path")) {
             path = flags.get("--path")?.value ?? "./index.html";
+          }
 
           await Functions.FetchEndpoint(
             Endpoint,
@@ -86,8 +85,9 @@ const MakeCommand: DK.Commands.Command = {
         }
         case "clang-format": {
           let path = "./.clang-format";
-          if (flags.has("--path"))
+          if (flags.has("--path")) {
             path = flags.get("--path")?.value ?? "./.clang-format";
+          }
 
           await Functions.FetchEndpoint(
             Endpoint,
@@ -99,8 +99,9 @@ const MakeCommand: DK.Commands.Command = {
         }
         case "prettierrc": {
           let path = "./.prettierrc";
-          if (flags.has("--path"))
+          if (flags.has("--path")) {
             path = flags.get("--path")?.value ?? "./.prettierrc";
+          }
 
           await Functions.FetchEndpoint(
             Endpoint,
