@@ -56,7 +56,7 @@ export async function FetchEndpoint(
     console.log(`${GetTime()} -> attempting to write body to ${filepath}`);
     await writeFile(filepath, data, { encoding: "utf8", mode });
     return console.log(
-      `${GetTime()} -> written file to ${filepath} & set filemode to ${mode}`
+      `${GetTime()} -> written file to ${filepath} & set filemode to 0${mode.toString(8)}`
     );
   } catch (_error) {
     return FatalException(100, "cannot write file; do you have permission?");
