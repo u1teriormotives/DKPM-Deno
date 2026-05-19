@@ -6,9 +6,13 @@ import CLIData from "./modules/configuration.ts";
 import * as DKFunctions from "./modules/functions.ts";
 import * as DevKit from "./modules/typing.ts";
 
+import FetchCommand from "./commands/fetch.ts";
+
 const Commands: string[] = [];
 const cmds: Map<string, DevKit.DK.Commands.Command> = new Map();
 const Flags: Map<string, DevKit.DK.Commands.Flag> = new Map();
+
+cmds.set("fetch", FetchCommand);
 
 if (process.argv.length < 2) DKFunctions.FatalException(202, "few arguments");
 const args: readonly string[] = process.argv.slice(2);
