@@ -124,3 +124,11 @@ if (Help) {
 }
 if (!PrimaryArgument && (Flags.has("-v") || Flags.has("--version")))
   PrintHeader();
+
+if (PrimaryArgument && cmds.has(PrimaryArgument)) {
+  const cmd = cmds.get(PrimaryArgument);
+  await cmd?.commandFunction(new Set(Commands.slice(1)), Flags);
+} else {
+  PrintHelp();
+  DKFunctions.FatalException(201, "invalid command");
+}
