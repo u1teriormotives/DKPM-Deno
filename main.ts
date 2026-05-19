@@ -29,72 +29,98 @@ const PrimaryArgument: string | null = Commands[0] || null;
 const Help: boolean = PrimaryArgument
   ? PrimaryArgument === "help"
   : Flags.has("-h") || Flags.has("--help");
-if (Help) {
-  if (PrimaryArgument && PrimaryArgument === "help") {
-    const HArgument: string | null = Commands[1] || null;
-    if (HArgument) {
-      const cmd = cmds.get(HArgument);
 
-      if (!cmd) DKFunctions.FatalException(201, "invalid command");
+function PrintHeader() {
+  console.log(
+    `${DKFunctions.GetTime()} => ${CLIData.name} - ${CLIData.version}`
+  );
+}
+function PrintFlag(flag: DevKit.DK.Commands.FlagType) {
+  const wrapper = flag.optional ? ["[", "]"] : ["<", ">"];
+  const text = `${wrapper[0]}${flag.name}${wrapper[1]}`;
 
-      console.log(
-        `${DKFunctions.GetTime()} => ${CLIData.name} - ${CLIData.version}`
-      );
-      console.log(
-        `${process.argv0} ${cmd?.commandName} => ${cmd?.description}`
-      );
-      if (cmd?.aliases) {
-        console.log("  Aliases:");
-        console.log(` - ${cmd?.aliases.concat(", ")}`);
-      }
-      if (cmd?.subcommands) {
-        console.log("  Subcommands");
-        if (cmd?.subcommands instanceof Set) {
-          cmd?.subcommands.forEach(v => console.log(`    ${v}`));
-        }
-      }
-      if (cmd?.flags) {
-        console.log("  Flags:");
-        if (cmd?.flags instanceof Map) {
-          const keys = cmd?.flags.keys();
-          let key: string | undefined = keys.next().value;
-          while (key) {
-            const data = cmd?.flags.get(key);
-            if (data) {
-              if (data.optional) {
-                if (data.description) {
-                  console.log(`    [${data.name}] => ${data.description}`);
-                } else {
-                  console.log(`    [${data.name}]`);
-                }
-              } else {
-                if (data.description) {
-                  console.log(`    <${data.name}> => ${data.description}`);
-                } else {
-                  console.log(`    <${data.name}>`);
-                }
-              }
-              key = keys.next().value;
-            }
-          }
-        } else if (Array.isArray(cmd?.flags)) {
-          for (const flag of cmd?.flags) {
-            if (flag.optional) {
-              if (flag.description) {
-                console.log(`    [${flag.name}] => ${flag.description}`);
-              } else {
-                console.log(`    [${flag.name}]`);
-              }
-            } else {
-              if (flag.description) {
-                console.log(`    <${flag.name}> => ${flag.description}`);
-              } else {
-                console.log(`    <${flag.name}>`);
-              }
-            }
-          }
-        }
+  if (flag.description) {
+    console.log(`    ${text} => ${flag.description}`);
+  } else {
+    console.log(`    ${text}`);
+  }
+}
+function PrintFlags(
+  flags:
+    | Map<string, DevKit.DK.Commands.FlagType>
+    | DevKit.DK.Commands.FlagType[]
+) {
+  console.log("  Flags:");
+
+  const list = flags instanceof Map ? [...flags.values()] : flags;
+
+  for (const flag of list) {
+    PrintFlag(flag);
+  }
+}
+function PrintCommandHelp(cmd: DevKit.DK.Commands.Command) {
+  PrintHeader();
+
+  console.log(
+    `${process.argv0} ${cmd.commandName} => ${cmd.description ?? "no description"}`
+  );
+
+  if (cmd.aliases?.length) {
+    console.log("  Aliases:");
+    console.log(`    ${cmd.aliases.join(", ")}`);
+  }
+
+  if (cmd.subcommands) {
+    const subcommands = Array.isArray(cmd.subcommands)
+      ? cmd.subcommands
+      : [...cmd.subcommands];
+
+    if (subcommands.length > 0) {
+      console.log("  Subcommands:");
+      for (const subcmd of subcommands) {
+        console.log(`    ${subcmd}`);
       }
     }
   }
+
+  if (cmd.flags) {
+    PrintFlags(cmd.flags);
+  }
 }
+function PrintHelp(): void {
+  PrintHeader();
+
+  console.log(`${process.argv0} <command> [flags]`);
+
+  console.log("Commands:");
+  console.log("  help => prints help");
+
+  const commands: DevKit.DK.Commands.Command[] = [...cmds.values()];
+  for (const cmd of commands) {
+    if (cmd.description)
+      console.log(`  ${cmd.commandName} => ${cmd.description}`);
+    else console.log(`  ${cmd.commandName}`);
+  }
+}
+
+if (Help) {
+  if (PrimaryArgument === "help") {
+    const HArgument = Commands[1] ?? null;
+
+    if (HArgument) {
+      const cmd = cmds.get(HArgument);
+      if (!cmd) DKFunctions.FatalException(201, "invalid command");
+
+      PrintCommandHelp(cmd as DevKit.DK.Commands.Command);
+      process.exit(0);
+    }
+
+    PrintHelp();
+    process.exit(0);
+  }
+
+  PrintHelp();
+  process.exit(0);
+}
+if (!PrimaryArgument && (Flags.has("-v") || Flags.has("--version")))
+  PrintHeader();

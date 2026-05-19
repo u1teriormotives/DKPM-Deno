@@ -34,7 +34,7 @@ export namespace DK {
       readonly name: string;
       readonly value: string | null;
     };
-    type FlagType = {
+    export type FlagType = {
       readonly name: string;
       readonly optional: boolean;
       readonly description: string | undefined;
