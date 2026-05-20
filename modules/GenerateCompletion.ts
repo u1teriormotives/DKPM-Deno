@@ -3,6 +3,7 @@
 import * as DevKit from "./typing.ts";
 
 export default function GenerateCompletion(
+  argv0: string,
   commands: DevKit.DK.Commands.Command[]
 ) {
   function tab(indents: number | undefined) {
@@ -10,7 +11,7 @@ export default function GenerateCompletion(
     else return "  ";
   }
   // compdef stuff
-  console.log("#compdef _dkpm dkpm\n");
+  console.log(`#compdef _dkpm ${argv0}\n`);
   console.log("function _dkpm {"); // begin
 
   console.log(`${tab(1)}local line\n`);
