@@ -1,5 +1,5 @@
 {
   "tasks": {
-    "build": "deno compile --exclude exclude/* -A --output \"dkpm\" main.ts"
+    "build": "deno compile -A --output \"dkpm\" main.ts"
   }
 }
