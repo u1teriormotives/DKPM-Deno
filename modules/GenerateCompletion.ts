@@ -15,8 +15,8 @@ export default function GenerateCompletion(
   console.log("function _dkpm {"); // begin
 
   console.log(`${tab(1)}local line\n`);
-  console.log("_arguments -C \\");
-  console.log(`${tab(2)}help, -h, --help => display help`);
+  console.log(`${tab(1)}_arguments -C \\`);
+  console.log(`${tab(2)}help, -h, --help => display help \\`);
   for (let i = 0; i < commands.length; i++) {
     const cmd = commands[i];
     if (cmd.aliases && cmd.aliases.length > 0) {
