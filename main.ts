@@ -1,11 +1,12 @@
 /** @format */
 
-import process from "node:process";
+import process, { argv0 } from "node:process";
 
 import CLIData from "./modules/configuration.ts";
 import * as DKFunctions from "./modules/functions.ts";
 import * as DevKit from "./modules/typing.ts";
 
+import GenerateCompletion from "./modules/GenerateCompletion.ts";
 import FetchCommand from "./commands/fetch.ts";
 import MakeCommand from "./commands/make.ts";
 
@@ -225,6 +226,10 @@ if (Help) {
 }
 if (!PrimaryArgument && (Flags.has("-v") || Flags.has("--version"))) {
   PrintHeader();
+  process.exit(0);
+}
+if (PrimaryArgument === "completions" && Flags.size === 0) {
+  GenerateCompletion(argv0, [...cmds.values()]);
   process.exit(0);
 }
 
