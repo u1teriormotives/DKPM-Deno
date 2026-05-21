@@ -15,7 +15,7 @@ export const RunCommand: DevKit.DK.Commands.Command = {
   flags: undefined,
   commandFunction: async function (
     subcommands: Set<string>,
-    flags: Map<string, DevKit.DK.Commands.Flag>
+    _flags: Map<string, DevKit.DK.Commands.Flag>
   ): Promise<void> {
     try {
       const Metadata =
