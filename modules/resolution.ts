@@ -42,11 +42,15 @@ export namespace Resolution {
           );
         }
 
-        await mkdir(".dk");
-
-        return true;
+        return false;
       } catch (error) {
-        return [false, error as Error];
+        try {
+          await mkdir(".dk");
+
+          return true;
+        } catch (error) {
+          return [false, error as Error];
+        }
       }
     }
     export async function SetUpRouteMetadata(
@@ -60,18 +64,30 @@ export namespace Resolution {
         };
         if (routeType === DevKit.DK.RouteType.JavaScript) {
           data.routeType = "js";
-          const s = await stat(path);
-          const s2 = await stat(".dk");
-          if (!s.isFile() || !s2.isDirectory()) {
-            Functions.FatalException(400, "invalid path setup try again");
+          try {
+            const s = await stat(path);
+            const s2 = await stat(".dk");
+            if (!s.isFile() || !s2.isDirectory()) {
+              Functions.FatalException(400, "invalid path setup try again");
+            }
+            data.path = path;
+            await writeFile(
+              p.join(".dk", "routeConfig.json"),
+              JSON.stringify(data),
+              "utf8"
+            );
+          } catch (error) {
+            try {
+              data.path = path;
+              await writeFile(
+                p.join(".dk", "routeConfig.json"),
+                JSON.stringify(data),
+                "utf8"
+              );
+            } catch (error) {
+              Functions.FatalException(400, "invalid path setup");
+            }
           }
-          data.path = path;
-
-          await writeFile(
-            p.join(".dk", "routeConfig.json"),
-            JSON.stringify(data),
-            "utf8"
-          );
         } else if (routeType === DevKit.DK.RouteType.CSharp) {
           data.routeType = "cs";
           data.path = path; // Add in more extensive tests later when build command is introduced
