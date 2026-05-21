@@ -16,6 +16,7 @@ const FetchCommand: DK.Commands.Command = {
     flags: Map<string, DK.Commands.Flag>
   ): Promise<void> {
     const sbcmds: string[] = [...subcommands.values()];
+    await DK.Resolution.dotDkDirectory.SetUpDirectory();
 
     const PrimaryArgument: string = sbcmds[0];
     if (PrimaryArgument) {
@@ -37,9 +38,17 @@ const FetchCommand: DK.Commands.Command = {
                 undefined,
                 DK.FileMode.RWE
               );
+              await DK.Resolution.dotDkDirectory.SetUpRouteMetadata(
+                DK.RouteType.JavaScript,
+                path
+              );
               break;
             }
             case "c#":
+              // C# is a bit harder to implement because it's multiple files
+              // & it is added to the path instead of per-directory (JS router
+              // will be like this too when it's rewritten for Deno, just like
+              // this CLI)
               Functions.FatalException(101, "not implemented");
               break;
             default:
