@@ -9,6 +9,7 @@ import * as DevKit from "./modules/typing.ts";
 import GenerateCompletion from "./modules/GenerateCompletion.ts";
 import FetchCommand from "./commands/fetch.ts";
 import MakeCommand from "./commands/make.ts";
+import RunCommand from "./commands/run.ts";
 
 const Commands: string[] = [];
 const cmds: Map<string, DevKit.DK.Commands.Command> = new Map();
@@ -82,6 +83,7 @@ function Row(label: string, description?: string | null, accent = Style.green) {
 
 cmds.set("fetch", FetchCommand);
 cmds.set("make", MakeCommand);
+cmds.set("run", RunCommand);
 
 if (process.argv.length < 2) DKFunctions.FatalException(202, "few arguments");
 const args: readonly string[] = process.argv.slice(2);
