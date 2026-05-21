@@ -45,4 +45,8 @@ export namespace DK {
     RWE = 0o755,
     RW = 0o644,
   }
+  export enum RouteType {
+    JavaScript,
+    CSharp,
+  }
 }
