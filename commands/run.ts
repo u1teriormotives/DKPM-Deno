@@ -30,7 +30,7 @@ export const RunCommand: DevKit.DK.Commands.Command = {
         ) {
           const s = await stat(Metadata.path);
           if (s.isFile()) {
-            const proc = spawn(Metadata.path);
+            const proc = spawn(`./${Metadata.path}`);
             proc.once("close", code => {
               if (code === 0)
                 return Functions.LogSuccess(`returned with ${code}`);
