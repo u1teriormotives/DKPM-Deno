@@ -1,10 +1,11 @@
 /** @format */
 // deno-lint-ignore-file no-namespace
-import { mkdir, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import p from "node:path";
 
 import * as Functions from "./functions.ts";
 import * as DevKit from "./typing.ts";
+import path from "node:path";
 
 export namespace Resolution {
   export function resolveEndpoint(EndpointName: string): Readonly<string> {
@@ -32,7 +33,7 @@ export namespace Resolution {
     > {
       try {
         const s = await stat(".dk");
-        
+
         if (s.isDirectory()) return true;
         else if (s.isFile()) {
           Functions.FatalException(
@@ -84,6 +85,27 @@ export namespace Resolution {
         return true;
       } catch (error) {
         return false;
+      }
+    }
+    async function GetRouteMetadataAsString(): Promise<string | Error> {
+      try {
+        const data = await readFile(
+          path.join(".dk", "routeConfig.json"),
+          "utf8"
+        );
+        return data;
+      } catch (error) {
+        return error as Error;
+      }
+    }
+    // deno-lint-ignore no-explicit-any
+    export async function GetRouteMetadata(): Promise<any | Error> {
+      try {
+        const mdata = await GetRouteMetadataAsString();
+        if (mdata instanceof Error) return mdata;
+        return JSON.parse(mdata as string);
+      } catch (error) {
+        return error as Error;
       }
     }
   }
