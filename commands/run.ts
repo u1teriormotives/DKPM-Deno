@@ -2,7 +2,7 @@
 
 import { spawn } from "node:child_process";
 import { stat } from "node:fs/promises";
-import { stdin } from "node:process";
+import { stderr, stdin, stdout } from "node:process";
 
 import * as Functions from "../modules/functions.ts";
 import * as DevKit from "../modules/typing.ts";
@@ -36,10 +36,10 @@ export const RunCommand: DevKit.DK.Commands.Command = {
                 return Functions.LogSuccess(`returned with ${code}`);
               else return Functions.LogError(`returned ${code}`);
             });
-            proc.stdout.on("data", c => Functions.LogStep(`router => ${c}`));
-            proc.stderr.on("data", c => Functions.LogError(`router => ${c}`));
+            proc.stdout.on("data", c => stdout.write(`router => ${c}`));
+            proc.stderr.on("data", c => stderr.write(`router => ${c}`));
             stdin.on("data", d =>
-              proc.stdin.write(d, e => Functions.LogError(`router => ${e}`))
+              proc.stdin.write(d, e => stderr.write(`router => ${e}`))
             );
           }
         }
