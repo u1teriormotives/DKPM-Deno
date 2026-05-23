@@ -58,7 +58,7 @@ const MakeCommand: DK.Commands.Command = {
         case "dkroute": {
           let path = "./DKRoute";
           if (flags.has("--path")) {
-            path = flags.get("--path")?.value ?? "./DKRoute";
+            path = flags.get("--path")?.value ?? "./DKRoute.json";
           }
 
           await Functions.FetchEndpoint(
