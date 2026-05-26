@@ -56,7 +56,7 @@ const MakeCommand: DK.Commands.Command = {
           break;
         }
         case "dkroute": {
-          let path = "./DKRoute";
+          let path = "./DKRoute.json";
           if (flags.has("--path")) {
             path = flags.get("--path")?.value ?? "./DKRoute.json";
           }
